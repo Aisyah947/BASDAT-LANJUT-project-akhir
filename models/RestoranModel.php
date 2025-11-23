@@ -43,6 +43,35 @@ class RestoranModel {
         return $stats;
     }
 
+    public function insertMenu($nama, $id_kategori, $harga, $deskripsi, $status, $foto)
+    {
+        $stmt = $this->conn->prepare("
+            INSERT INTO menu (nama_menu, id_kategori, harga, deskripsi, status_ketersediaan, foto_menu)
+            VALUES (:nama, :kategori, :harga, :deskripsi, :status, :foto)
+        ");
+    
+        return $stmt->execute([
+            ':nama'      => $nama,
+            ':kategori'  => $id_kategori,
+            ':harga'     => $harga,
+            ':deskripsi' => $deskripsi,
+            ':status'    => $status ? 'true' : 'false',  // penting!
+            ':foto'      => $foto
+        ]);
+    }
+    
+
+public function getMenuById($id){
+    $stmt = $this->conn->prepare("
+        SELECT m.*, k.nama_kategori 
+        FROM menu m
+        JOIN kategori_menu k ON m.id_kategori = k.id_kategori
+        WHERE m.id_menu = :id
+    ");
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
     // --- MEJA ---
     public function getAllMeja(){
         $stmt = $this->conn->prepare("SELECT * FROM meja ORDER BY id_meja ASC");
